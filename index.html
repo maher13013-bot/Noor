@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#123d32">
+<title>نور القرآن</title>
+<style>
+:root{--green:#123d32;--green2:#1d5948;--gold:#d8bd75;--cream:#f6f1e5;--ink:#20352d;--muted:#6d7d74}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Tahoma,Arial,sans-serif}
+header{background:linear-gradient(135deg,var(--green),#245c49);color:white;padding:25px 18px 22px;text-align:center;border-bottom:4px solid var(--gold)}
+header h1{margin:0;color:#f0d99b;font-size:30px}header p{margin:10px 0 0;color:#e9e0c8}
+nav{display:flex;gap:7px;overflow:auto;padding:12px;background:#e9dfc5;position:sticky;top:0;z-index:3}
+nav button{border:1px solid #c8b77f;background:#fffaf0;color:var(--green);border-radius:22px;padding:10px 14px;white-space:nowrap;font-weight:bold}
+nav button.active,.primary{background:var(--green);color:white;border-color:var(--green)}
+main{max-width:850px;margin:auto;padding:16px}
+.card{background:#fffdf8;border:1px solid #e3dac5;border-radius:16px;padding:17px;margin:12px 0;box-shadow:0 3px 12px #243b2c0b}
+h2{color:var(--green);margin:4px 0 14px}.muted{color:var(--muted);font-size:13px}
+input,select{width:100%;padding:12px;border:1px solid #d7cba9;border-radius:10px;background:white;font:inherit;margin:6px 0}
+button{cursor:pointer;font:inherit}.action{padding:11px 15px;border:0;border-radius:10px;background:var(--green);color:white;font-weight:bold;margin:5px 3px}
+.secondary{padding:10px 14px;border:1px solid #cbbb8f;border-radius:10px;background:#fffaf0;color:var(--green);margin:4px}
+.ayah{font-size:24px;line-height:2.1;text-align:center;padding:15px 5px;border-bottom:1px solid #eee5d2}
+.surahrow{display:flex;justify-content:space-between;align-items:center;padding:13px;border-bottom:1px solid #eee5d2;cursor:pointer}
+.surahrow:hover{background:#f7f1e3}.gold{color:#9a792f}.center{text-align:center}
+.bigcount{font-size:46px;color:var(--green);font-weight:bold;margin:10px}
+.praygrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.pray{background:#f5f0e3;padding:14px;border-radius:12px;text-align:center}
+.hidden{display:none}.status{font-size:13px;color:var(--muted);min-height:20px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+</style>
+</head>
+<body>
+<header><h1>☾ نور القرآن</h1><p>القرآن الكريم • الأذكار • الأدعية • مواقيت الصلاة</p></header>
+<nav id="nav">
+<button class="active" data-page="home">الرئيسية</button><button data-page="quran">القرآن</button>
+<button data-page="adhkar">الأذكار</button><button data-page="duas">الأدعية</button><button data-page="prayer">الصلاة</button>
+</nav>
+<main>
+<section id="home" class="page">
+<div class="card center"><div class="gold">﴿ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴾</div><h2>أهلاً بك في نور القرآن</h2><p>اجعل لك ورداً يومياً من القرآن والذكر.</p><button class="action" onclick="showPage('quran')">ابدأ القراءة</button></div>
+<div class="card center"><h2>آية اليوم</h2><div class="ayah">﴿ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ ﴾</div><p class="muted">سورة الرعد — ٢٨</p></div>
+<div class="card"><h2>مواقيت الصلاة — جدة</h2><div id="homePrayer" class="status">اضغط لتحديث المواقيت من قسم الصلاة.</div><button class="secondary" onclick="showPage('prayer')">عرض المواقيت</button></div>
+</section>
+<section id="quran" class="page hidden">
+<div class="card"><h2>المصحف الشريف</h2><input id="searchSurah" placeholder="ابحث عن سورة..." oninput="filterSurahs()"><div id="surahList" class="status">جارٍ تحميل فهرس السور...</div></div>
+<div id="reader" class="card hidden"><button class="secondary" onclick="backToList()">← فهرس السور</button><h2 id="surahTitle" class="center"></h2><div id="ayahs"></div><div id="audioStatus" class="status"></div><audio id="audio" controls style="width:100%;margin-top:10px"></audio></div>
+</section>
+<section id="adhkar" class="page hidden">
+<div class="card center"><h2>عداد التسبيح</h2><div id="dhikrText" class="ayah">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div><div class="bigcount" id="count">0</div><button class="action" onclick="increment()">سبّح</button><button class="secondary" onclick="resetCount()">إعادة</button><p class="muted">يمكنك تغيير الذكر من القائمة:</p><select id="dhikrSelect" onchange="changeDhikr()"><option>سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</option><option>أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ</option><option>لَا إِلَهَ إِلَّا اللَّهُ</option><option>الْحَمْدُ لِلَّهِ</option><option>اللَّهُ أَكْبَرُ</option></select></div>
+<div class="card"><h2>أذكار مختارة</h2><p>أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.</p><hr><p>اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور.</p><hr><p>رضيت بالله رباً، وبالإسلام ديناً، وبمحمد ﷺ نبياً.</p><p class="muted">هذه أذكار مختارة؛ راجع كتاب أذكار موثوقاً لمعرفة الأعداد والأوقات والألفاظ كاملة.</p></div>
+</section>
+<section id="duas" class="page hidden">
+<div class="card"><h2>أدعية من القرآن والسنة</h2>
+<div class="ayah">رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ</div>
+<div class="ayah">رَبِّ زِدْنِي عِلْمًا</div>
+<div class="ayah">رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ</div>
+<div class="ayah">اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ</div>
+</div></section>
+<section id="prayer" class="page hidden">
+<div class="card"><h2>مواقيت الصلاة</h2><p class="muted">المدينة: جدة، المملكة العربية السعودية</p><button class="action" onclick="loadPrayer()">تحديث المواقيت</button><div id="prayerDate" class="muted"></div><div id="prayerTimes" class="praygrid"></div><p id="prayerNote" class="status">يتم تحميل المواقيت عند فتح القسم.</p><p class="muted">قد تختلف النتائج قليلاً عن تقويم المسجد المحلي؛ اعتمد التقويم الرسمي المحلي عند الحاجة.</p></div>
+</section>
+</main>
+<footer>نور القرآن • إصدار تجريبي — النصوص والتلاوات تُحمّل من خدمات خارجية</footer>
+<script>
+let surahs=[];
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='quran'&&!surahs.length)loadSurahs();if(id==='prayer')loadPrayer();}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+async function loadSurahs(){const el=document.getElementById('surahList');try{const r=await fetch('https://api.alquran.cloud/v1/surah');if(!r.ok)throw Error();const j=await r.json();surahs=j.data;renderSurahs(surahs);}catch(e){el.textContent='تعذر تحميل فهرس السور. تحقق من اتصال الإنترنت ثم أعد تحميل الصفحة.';}}
+function renderSurahs(list){const el=document.getElementById('surahList');el.innerHTML='';list.forEach(s=>{const d=document.createElement('div');d.className='surahrow';d.innerHTML=`<span>${s.number}. ${s.name}</span><span class="muted">${s.numberOfAyahs} آية</span>`;d.onclick=()=>loadSurah(s.number);el.appendChild(d);});}
+function filterSurahs(){const q=document.getElementById('searchSurah').value.trim();renderSurahs(surahs.filter(s=>s.name.includes(q)||s.englishName.toLowerCase().includes(q.toLowerCase())||String(s.number)===q));}
+async function loadSurah(n){const reader=document.getElementById('reader');reader.classList.remove('hidden');document.getElementById('surahTitle').textContent='جارٍ تحميل السورة...';document.getElementById('ayahs').textContent='';document.getElementById('audioStatus').textContent='';try{const r=await fetch(`https://api.alquran.cloud/v1/surah/${n}/quran-uthmani`);if(!r.ok)throw Error();const j=await r.json();document.getElementById('surahTitle').textContent=j.data.name;const box=document.getElementById('ayahs');j.data.ayahs.forEach(a=>{const d=document.createElement('div');d.className='ayah';d.textContent=a.text+' ۝ '+a.numberInSurah;box.appendChild(d);});loadAudio(n);}catch(e){document.getElementById('surahTitle').textContent='تعذر تحميل السورة';}}
+async function loadAudio(n){const status=document.getElementById('audioStatus');status.textContent='جارٍ تجهيز تلاوة مشاري العفاسي...';try{const r=await fetch(`https://api.alquran.cloud/v1/surah/${n}/ar.alafasy`);const j=await r.json();const first=j.data.ayahs[0].audio;document.getElementById('audio').src=first;status.textContent='تلاوة الآية الأولى — مشاري العفاسي. بقية الآيات تظهر في النص أعلاه.';}catch(e){status.textContent='تعذر تجهيز الصوت حالياً.';}}
+function backToList(){document.getElementById('reader').classList.add('hidden');}
+let count=0;function increment(){count++;document.getElementById('count').textContent=count;}function resetCount(){count=0;document.getElementById('count').textContent=count;}function changeDhikr(){document.getElementById('dhikrText').textContent=document.getElementById('dhikrSelect').value;resetCount();}
+async function loadPrayer(){const note=document.getElementById('prayerNote'),box=document.getElementById('prayerTimes');note.textContent='جارٍ جلب المواقيت...';box.innerHTML='';const now=new Date();const date=`${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()}`;try{const url=`https://api.aladhan.com/v1/timingsByCity/${date}?city=Jeddah&country=Saudi%20Arabia&method=4`;const r=await fetch(url);if(!r.ok)throw Error();const j=await r.json();const t=j.data.timings;document.getElementById('prayerDate').textContent='التاريخ: '+j.data.date.readable;[['الفجر',t.Fajr],['الشروق',t.Sunrise],['الظهر',t.Dhuhr],['العصر',t.Asr],['المغرب',t.Maghrib],['العشاء',t.Isha]].forEach(([name,time])=>{const d=document.createElement('div');d.className='pray';d.innerHTML=`<strong>${name}</strong><br><span>${time}</span>`;box.appendChild(d);});note.textContent='تم تحديث المواقيت.';document.getElementById('homePrayer').textContent='تم تحديث مواقيت جدة.';}catch(e){note.textContent='تعذر تحميل المواقيت. حاول مرة أخرى لاحقاً.';}}
+</script>
+</body></html>
